@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css" />
+</head>
+<body class="antialiased">
+
+  <!-- Header -->
+  <header class="surface border-b brd sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img id="brand-logo" class="hidden h-9 w-9 rounded-full object-cover" alt="logo" />
+        <span id="brand-name" class="font-extrabold text-xl tracking-tight">Salon</span>
+      </div>
+      <a href="#book" class="btn-accent px-5 py-2 rounded-full text-sm font-semibold">Book now</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-bg">
+    <div class="max-w-5xl mx-auto px-5 py-28 text-center">
+      <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">Look sharp.<br/>Feel amazing.</h1>
+      <p id="hero-desc" class="dim max-w-xl mx-auto mt-5 text-lg"></p>
+      <p id="hours-line" class="accent font-semibold mt-3 text-sm uppercase tracking-widest"></p>
+      <a href="#book" class="btn-accent inline-block mt-8 px-8 py-4 rounded-full font-bold text-lg">Reserve your slot</a>
+    </div>
+  </section>
+
+  <!-- Gallery (placeholders — swap with real photos) -->
+  <section class="max-w-5xl mx-auto px-5 py-16">
+    <h2 class="text-2xl font-bold mb-6">Our work</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <img class="rounded-2xl h-48 w-full object-cover" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80" alt="Haircut" />
+      <img class="rounded-2xl h-48 w-full object-cover" src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&q=80" alt="Barbershop" />
+      <img class="rounded-2xl h-48 w-full object-cover" src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&q=80" alt="Styling" />
+      <img class="rounded-2xl h-48 w-full object-cover" src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&q=80" alt="Salon interior" />
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="max-w-5xl mx-auto px-5 py-10">
+    <h2 class="text-2xl font-bold mb-6">Services</h2>
+    <div id="services-grid" class="grid md:grid-cols-3 gap-4"></div>
+  </section>
+
+  <!-- Booking form -->
+  <section id="book" class="max-w-3xl mx-auto px-5 py-16">
+    <div class="surface rounded-3xl border brd p-8 shadow-xl">
+      <h2 class="text-2xl font-bold">Book an appointment</h2>
+      <p class="dim text-sm mt-1 mb-6">Free slots update in real time. No prepayment.</p>
+
+      <form id="booking-form" class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-4">
+          <input id="name" class="field" placeholder="Your name" required minlength="2" />
+          <input id="phone" class="field" placeholder="Phone, e.g. +1 555 123 4567" required />
+        </div>
+        <select id="service" class="field" required></select>
+        <input id="date" type="date" class="field" required />
+        <div>
+          <div class="dim text-xs uppercase tracking-wider mb-2">Available time</div>
+          <div id="slot-grid" class="flex flex-wrap gap-2">
+            <span class="dim text-sm">Pick a date first ↑</span>
+          </div>
+        </div>
+        <button id="submit-btn" class="btn-accent w-full py-4 rounded-xl font-bold text-lg" disabled>
+          Book now
+        </button>
+      </form>
+
+      <div id="booking-success" class="hidden text-center py-10">
+        <div class="text-5xl">✅</div>
+        <h3 class="text-xl font-bold mt-4">You're booked!</h3>
+        <p class="dim mt-2">We'll contact you shortly to confirm. See you soon!</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="surface-2 border-t brd">
+    <div class="max-w-5xl mx-auto px-5 py-8 text-center dim text-sm">
+      © <span id="footer-name">Salon</span> · Powered by an independent booking engine — zero commissions, your data stays yours.
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/js/booking.js"></script>
+  <script src="/static/js/demo-fab.js"></script>
+</body>
+</html>

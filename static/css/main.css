@@ -1,0 +1,122 @@
+/* Theme system — toggled by the demo FAB via [data-theme] on <html> */
+:root, html[data-theme="light"] {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface-2: #f1efec;
+  --text: #1c1917;
+  --text-dim: #78716c;
+  --accent: #c2410c;
+  --accent-ink: #ffffff;
+  --border: #e7e5e4;
+  --hero-overlay: rgba(255,255,255,.55);
+}
+
+html[data-theme="dark"] {
+  --bg: #0c0a09;
+  --surface: #1c1917;
+  --surface-2: #292524;
+  --text: #fafaf9;
+  --text-dim: #a8a29e;
+  --accent: #f97316;
+  --accent-ink: #0c0a09;
+  --border: #44403c;
+  --hero-overlay: rgba(12,10,9,.62);
+}
+
+html[data-theme="gold"] {
+  --bg: #12100b;
+  --surface: #1d1912;
+  --surface-2: #2a241a;
+  --text: #f5efe0;
+  --text-dim: #b3a88c;
+  --accent: #d4af37;
+  --accent-ink: #12100b;
+  --border: #4a4130;
+  --hero-overlay: rgba(18,16,11,.65);
+}
+
+html[data-theme="rose"] {
+  --bg: #fff1f2;
+  --surface: #ffffff;
+  --surface-2: #ffe4e6;
+  --text: #4c0519;
+  --text-dim: #9f1239;
+  --accent: #e11d48;
+  --accent-ink: #ffffff;
+  --border: #fecdd3;
+  --hero-overlay: rgba(255,241,242,.5);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  transition: background .4s ease, color .4s ease;
+}
+.surface { background: var(--surface); }
+.surface-2 { background: var(--surface-2); }
+.dim { color: var(--text-dim); }
+.accent { color: var(--accent); }
+.brd { border-color: var(--border); }
+
+.btn-accent {
+  background: var(--accent); color: var(--accent-ink);
+  transition: transform .15s ease, opacity .2s ease;
+}
+.btn-accent:hover { transform: translateY(-2px); opacity: .92; }
+
+.field {
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: .75rem;
+  padding: .75rem 1rem; width: 100%; outline: none;
+}
+.field:focus { border-color: var(--accent); }
+
+.hero-bg {
+  background-image:
+    linear-gradient(var(--hero-overlay), var(--hero-overlay)),
+    url("https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600&q=80");
+  background-size: cover; background-position: center;
+}
+
+/* Demo FAB (visible only with ?demo=1) */
+#demo-fab {
+  position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 60;
+  display: none; flex-direction: column; gap: .5rem; align-items: flex-end;
+}
+#demo-fab.open .fab-panel { display: flex; }
+.fab-panel {
+  display: none; flex-direction: column; gap: .4rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 1rem; padding: .75rem; box-shadow: 0 12px 32px rgba(0,0,0,.25);
+}
+.fab-btn {
+  width: 3.25rem; height: 3.25rem; border-radius: 9999px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent); color: var(--accent-ink);
+  box-shadow: 0 8px 24px rgba(0,0,0,.3); font-size: 1.25rem;
+}
+.swatch { width: 2rem; height: 2rem; border-radius: 9999px; border: 2px solid var(--border); cursor: pointer; }
+.swatch[data-t="light"] { background: #faf9f7; }
+.swatch[data-t="dark"]  { background: #0c0a09; }
+.swatch[data-t="gold"]  { background: #d4af37; }
+.swatch[data-t="rose"]  { background: #ffe4e6; }
+
+/* Slot picker chips */
+.slot {
+  border: 1px solid var(--border); border-radius: .6rem;
+  padding: .5rem .8rem; font-size: .85rem; cursor: pointer;
+  background: var(--surface); color: var(--text); transition: all .15s;
+}
+.slot:hover { border-color: var(--accent); }
+.slot.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 2rem; transform: translateX(-50%);
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: .9rem 1.4rem; border-radius: .9rem; z-index: 80;
+  box-shadow: 0 12px 32px rgba(0,0,0,.3); opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.toast.show { opacity: 1; }

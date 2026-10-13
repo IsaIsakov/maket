@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Booking CRM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <style>
+    .badge { font-size:.7rem; padding:.15rem .55rem; border-radius:9999px; font-weight:600; }
+    .b-New { background:#3b82f622; color:#60a5fa; }
+    .b-Confirmed { background:#22c55e22; color:#4ade80; }
+    .b-Completed { background:#a3a3a322; color:#a3a3a3; }
+    .b-Cancelled { background:#ef444422; color:#f87171; }
+    select.status-sel { background: var(--surface-2); color: var(--text); border:1px solid var(--border); border-radius:.5rem; padding:.25rem .5rem; font-size:.8rem; }
+  </style>
+</head>
+<body class="antialiased">
+
+<!-- LOGIN -->
+<div id="login-view" class="min-h-screen flex items-center justify-center px-5">
+  <div class="surface border brd rounded-2xl p-8 w-full max-w-sm">
+    <h1 class="text-xl font-bold">🔐 Admin panel</h1>
+    <p class="dim text-sm mt-1 mb-6">Default password: <code>admin123</code> — change it after first login.</p>
+    <input id="pwd" type="password" class="field" placeholder="Password" />
+    <button onclick="login()" class="btn-accent w-full mt-4 py-3 rounded-xl font-bold">Sign in</button>
+    <p id="login-err" class="text-red-400 text-sm mt-3 hidden"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash-view" class="hidden min-h-screen">
+  <header class="surface border-b brd sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
+      <span class="font-extrabold text-lg">📋 Booking CRM</span>
+      <div class="flex gap-3">
+        <a href="/" target="_blank" class="dim text-sm underline">View site ↗</a>
+        <button onclick="logout()" class="text-sm text-red-400">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-5 py-8 grid lg:grid-cols-3 gap-6">
+
+    <!-- LEFT COLUMN: settings -->
+    <div class="space-y-6">
+      <section class="surface border brd rounded-2xl p-5">
+        <h2 class="font-bold mb-4">⚙️ Site settings</h2>
+        <label class="dim text-xs">Company name</label>
+        <input id="s-name" class="field mt-1 mb-3" />
+        <label class="dim text-xs">Description</label>
+        <textarea id="s-desc" class="field mt-1 mb-3" rows="3"></textarea>
+        <label class="dim text-xs">Opening hours (HH:MM-HH:MM)</label>
+        <input id="s-hours" class="field mt-1 mb-3" placeholder="09:00-20:00" />
+        <label class="dim text-xs">Slot step (minutes)</label>
+        <input id="s-step" type="number" class="field mt-1 mb-4" />
+        <label class="dim text-xs">Logo</label>
+        <input id="s-logo" type="file" accept="image/*" class="field mt-1 mb-4" />
+        <button onclick="saveSettings()" class="btn-accent w-full py-2.5 rounded-xl font-semibold">Save settings</button>
+      </section>
+
+      <section class="surface border brd rounded-2xl p-5">
+        <h2 class="font-bold mb-2">📨 Telegram notifications</h2>
+        <p class="dim text-xs mb-4">Instant alerts about new bookings — straight to your phone.</p>
+        <label class="dim text-xs">Bot token (from @BotFather)</label>
+        <input id="tg-token" class="field mt-1 mb-3" placeholder="123456:ABC-DEF…" />
+        <label class="dim text-xs">Chat ID (from @userinfobot)</label>
+        <input id="tg-chat" class="field mt-1 mb-4" placeholder="123456789" />
+        <button onclick="saveTelegram()" class="btn-accent w-full py-2.5 rounded-xl font-semibold">Connect & test</button>
+        <p class="dim text-xs mt-3">Token is verified with Telegram before saving; a test message is sent to confirm.</p>
+      </section>
+
+      <section class="surface border brd rounded-2xl p-5">
+        <h2 class="font-bold mb-4">🔑 Change password</h2>
+        <input id="old-pwd" type="password" class="field mb-3" placeholder="Current password" />
+        <input id="new-pwd" type="password" class="field mb-4" placeholder="New password (min 6 chars)" />
+        <button onclick="changePwd()" class="btn-accent w-full py-2.5 rounded-xl font-semibold">Update</button>
+      </section>
+    </div>
+
+    <!-- RIGHT COLUMN: services + bookings -->
+    <div class="lg:col-span-2 space-y-6">
+      <section class="surface border brd rounded-2xl p-5">
+        <h2 class="font-bold mb-4">💇 Services</h2>
+        <div class="grid md:grid-cols-4 gap-3 mb-3">
+          <input id="ns-name" class="field" placeholder="Name" />
+          <input id="ns-price" type="number" class="field" placeholder="Price $" />
+          <input id="ns-dur" type="number" class="field" placeholder="Minutes" />
+          <button onclick="addService()" class="btn-accent rounded-xl font-semibold">+ Add</button>
+        </div>
+        <div id="services-list" class="divide-y" style="border-color:var(--border)"></div>
+      </section>
+
+      <section class="surface border brd rounded-2xl p-5 overflow-x-auto">
+        <h2 class="font-bold mb-4">🗓 Bookings</h2>
+        <table class="w-full text-sm">
+          <thead class="dim text-xs uppercase">
+            <tr><th class="text-left py-2">When</th><th class="text-left">Client</th>
+                <th class="text-left">Service</th><th class="text-left">Status</th></tr>
+          </thead>
+          <tbody id="bookings-body"></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const token = () => localStorage.getItem("admin-token") || "";
+
+function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000); }
+
+async function api(url, opts = {}) {
+  opts.headers = { ...(opts.headers || {}), "X-Admin-Token": token() };
+  if (opts.body && typeof opts.body === "string")
+    opts.headers["Content-Type"] = "application/json";
+  const r = await fetch(url, opts);
+  if (r.status === 401) { logout(); throw new Error("Session expired"); }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.detail || "Request failed");
+  return data;
+}
+
+async function login() {
+  try {
+    const r = await fetch("/api/admin/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: $("#pwd").value }) });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.detail);
+    localStorage.setItem("admin-token", data.token);
+    boot();
+  } catch (e) {
+    $("#login-err").textContent = e.message;
+    $("#login-err").classList.remove("hidden");
+  }
+}
+
+function logout() {
+  localStorage.removeItem("admin-token");
+  $("#dash-view").classList.add("hidden");
+  $("#login-view").classList.remove("hidden");
+}
+
+async function boot() {
+  try { await api("/api/admin/verify"); } catch { return; }
+  $("#login-view").classList.add("hidden");
+  $("#dash-view").classList.remove("hidden");
+  loadAll();
+}
+
+async function loadAll() {
+  const s = await api("/api/admin/settings");
+  $("#s-name").value = s.company_name;
+  $("#s-desc").value = s.description;
+  $("#s-hours").value = s.opening_hours;
+  $("#s-step").value = s.slot_step;
+  $("#tg-token").value = s.telegram_token || "";
+  $("#tg-chat").value = s.telegram_chat_id || "";
+  loadServices(); loadBookings();
+}
+
+async function saveSettings() {
+  try {
+    await api("/api/admin/settings", { method: "PATCH", body: JSON.stringify({
+      company_name: $("#s-name").value, description: $("#s-desc").value,
+      opening_hours: $("#s-hours").value, slot_step: Number($("#s-step").value) }) });
+    const f = $("#s-logo").files[0];
+    if (f) {
+      const fd = new FormData(); fd.append("file", f);
+      await api("/api/admin/logo", { method: "POST", body: fd });
+      $("#s-logo").value = "";
+    }
+    toast("✅ Settings saved");
+  } catch (e) { toast("⚠️ " + e.message); }
+}
+
+async function saveTelegram() {
+  try {
+    const r = await api("/api/admin/telegram", { method: "POST",
+      body: JSON.stringify({ telegram_token: $("#tg-token").value,
+                             telegram_chat_id: $("#tg-chat").value }) });
+    toast(r.bot ? `✅ Connected to @${r.bot} — test message sent` : "✅ Saved");
+  } catch (e) { toast("⚠️ " + e.message); }
+}
+
+async function changePwd() {
+  try {
+    await api("/api/admin/password", { method: "POST", body: JSON.stringify({
+      old_password: $("#old-pwd").value, new_password: $("#new-pwd").value }) });
+    $("#old-pwd").value = ""; $("#new-pwd").value = "";
+    toast("✅ Password updated");
+  } catch (e) { toast("⚠️ " + e.message); }
+}
+
+async function loadServices() {
+  const rows = await api("/api/admin/services");
+  $("#services-list").innerHTML = rows.filter(s => s.active).map(s => `
+    <div class="py-3 flex items-center justify-between">
+      <div><span class="font-semibold">${s.name}</span>
+        <span class="dim text-xs ml-2">$${s.price} · ${s.duration_min} min</span></div>
+      <button onclick="delService(${s.id})" class="text-red-400 text-sm">Delete</button>
+    </div>`).join("");
+}
+
+async function addService() {
+  try {
+    await api("/api/admin/services", { method: "POST", body: JSON.stringify({
+      name: $("#ns-name").value, price: Number($("#ns-price").value),
+      duration_min: Number($("#ns-dur").value) }) });
+    $("#ns-name").value = ""; $("#ns-price").value = ""; $("#ns-dur").value = "";
+    loadServices(); toast("✅ Service added");
+  } catch (e) { toast("⚠️ " + e.message); }
+}
+
+async function delService(id) {
+  if (!confirm("Hide this service from the booking form?")) return;
+  await api(`/api/admin/services/${id}`, { method: "DELETE" });
+  loadServices();
+}
+
+const STATUSES = ["New", "Confirmed", "Completed", "Cancelled"];
+async function loadBookings() {
+  const rows = await api("/api/admin/bookings");
+  $("#bookings-body").innerHTML = rows.length ? rows.map(b => `
+    <tr class="border-t brd">
+      <td class="py-3 pr-3 whitespace-nowrap">
+        <div class="font-semibold">${new Date(b.start_time).toLocaleString("en-GB",
+          { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" })}</div>
+        <div class="dim text-xs">→ ${new Date(b.end_time).toLocaleTimeString("en-GB",
+          { hour:"2-digit", minute:"2-digit" })}</div>
+      </td>
+      <td class="pr-3"><div>${b.client_name}</div><div class="dim text-xs">${b.phone}</div></td>
+      <td class="pr-3">${b.service_name}</td>
+      <td><span class="badge b-${b.status}">${b.status}</span>
+        <select class="status-sel ml-2" onchange="setStatus(${b.id}, this.value)">
+          ${STATUSES.map(s => `<option ${s===b.status?"selected":""}>${s}</option>`).join("")}
+        </select></td>
+    </tr>`).join("")
+    : `<tr><td colspan="4" class="py-8 text-center dim">No bookings yet.</td></tr>`;
+}
+
+async function setStatus(id, status) {
+  try {
+    await api(`/api/admin/bookings/${id}/status`, { method: "PATCH",
+      body: JSON.stringify({ status }) });
+    loadBookings(); toast("✅ Status: " + status);
+  } catch (e) { toast("⚠️ " + e.message); }
+}
+
+if (token()) boot();
+</script>
+</body>
+</html>
